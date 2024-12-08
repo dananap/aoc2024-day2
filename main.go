@@ -10,7 +10,14 @@ import (
 	"strings"
 )
 
-func reportSafe(report []int) bool {
+func removeLevel(report []int, element int) []int {
+	newReport := make([]int, len(report));
+	_ = copy(newReport, report)
+	newReport = append(newReport[:element], newReport[element+1:]...)
+	return newReport
+}
+
+func checkSafety(report []int) bool {
 	increasing := report[0] < report[1]
 	for i := 0; i < len(report)-1; i++ {
 		diff := report[i+1] - report[i]
@@ -23,9 +30,21 @@ func reportSafe(report []int) bool {
 		if diffAbs := math.Abs(float64(diff)); diffAbs < 1 || diffAbs > 3 {
 			return false
 		}
-
 	}
 	return true
+}
+
+func reportSafe(report []int) bool {
+	if checkSafety(report) {
+		return true
+	}
+	for i := range report {
+		dampenedReport := removeLevel(report, i)
+		if checkSafety(dampenedReport) {
+			return true
+		}
+	}
+	return false
 }
 
 func main() {
